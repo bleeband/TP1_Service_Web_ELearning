@@ -5,9 +5,98 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// ---------- ENUM ------------ //
+enum Role {
+  ETUDIANT
+  FORMATEUR
+  ADMIN
+}
+
+enum NiveauCours {
+  DEBUTANT
+  INTERMEDIAIRE
+  AVANCE
+}
+
+enum StatutInscription {
+  ACTIVE
+  TERMINEE
+  ABANDONNEE
+}
+
+// ---------- MODEL ------------- //
+model Utilisateur {
+  id             Int           @id @default(autoincrement())
+  email          String        @unique
+  motDePasseHash String
+  nom            String
+  role           Role          @default(ETUDIANT)
+  dateCreation   DateTime      @default(now())
+  coursPublies   Cours[]
+  inscriptions   Inscription[]
+  quiz           Quiz[]
+}
+
+model Cours {
+  id           Int           @id @default(autoincrement())
+  titre        String
+  description  String
+  niveau       NiveauCours
+  dateCreation DateTime      @default(now())
+  formateurId  Int
+  formateur    Utilisateur   @relation(fields: [formateurId], references: [id])
+  lecons       Lecon[]
+  inscriptions Inscription[]
+  quiz         Quiz[]
+}
+
+model Lecon {
+  id      Int    @id @default(autoincrement())
+  titre   String
+  contenu String
+  ordre   Int
+  coursId Int
+  cours   Cours  @relation(fields: [coursId], references: [id], onDelete: Cascade)
+
+  @@unique([coursId, ordre])
+}
+
+model Inscription {
+  id              Int               @id @default(autoincrement())
+  statut          StatutInscription @default(ACTIVE)
+  progression     Int               @default(0)
+  dateInscription DateTime          @default(now())
+  etudiantId      Int
+  coursId         Int
+  etudiant        Utilisateur       @relation(fields: [etudiantId], references: [id])
+  cours           Cours             @relation(fields: [coursId], references: [id], onDelete: Cascade)
+
+  @@unique([etudiantId, coursId])
+}
+
+model Quiz {
+  id           Int         @id @default(autoincrement())
+  score        Int?
+  dateCreation DateTime    @default(now())
+  coursId      Int
+  etudiantId   Int
+  cours        Cours       @relation(fields: [coursId], references: [id], onDelete: Cascade)
+  etudiant     Utilisateur @relation(fields: [etudiantId], references: [id])
+  questions    Question[]
+}
+
+model Question {
+  id                Int      @id @default(autoincrement())
+  enonce            String
+  bonneReponse      String
+  mauvaisesReponses String[]
+  quizId            Int
+  quiz              Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
 }
