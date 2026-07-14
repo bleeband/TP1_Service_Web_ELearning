@@ -1,3 +1,8 @@
+# TP1 Service Web - E26-420941MA
+- Eva Bessette
+- Charles Legeault
+- Marc-André Dufour
+
 ## Le contexte
 
 Un cégep veut lancer sa propre plateforme de cours en ligne, façon « mini-Moodle ». Les formateurs publient des cours composés de leçons ; les étudiants s'y inscrivent, suivent les leçons et passent des quiz dont les questions sont tirées d'une banque mondiale. Votre équipe construit le cerveau de tout ça : le backend.
