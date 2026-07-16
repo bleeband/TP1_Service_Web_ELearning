@@ -1,11 +1,11 @@
-import express, { Request, Response } from "express";
+import express, { type Request, type Response } from "express";
 import dotenv from "dotenv";
 
-import authRoutes from "./routes/auth.routes.js";
-import coursRoutes from "./routes/cours.routes.js";
-import inscriptionsRoutes from "./routes/inscriptions.routes.js";
-import quizRoutes from "./routes/quiz.routes.js";
-import utilisateursRoutes from "./routes/utilisateurs.routes.js";
+import authRoutes from "./src/routes/auth.routes.js";
+import coursRoutes from "./src/routes/cours.routes.js";
+import inscriptionsRoutes from "./src/routes/inscriptions.routes.js";
+import quizRoutes from "./src/routes/quiz.routes.js";
+import utilisateursRoutes from "./src/routes/utilisateurs.routes.js";
 
 dotenv.config();
 
