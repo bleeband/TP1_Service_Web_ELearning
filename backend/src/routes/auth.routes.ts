@@ -1,7 +1,7 @@
-import { Router, Request, Response } from "express";
+import { Router, type Request, type Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import prisma from "../utils/prisma.js";
+import prisma from "../../utils/prisma.js";
 
 const router = Router();
 
@@ -10,7 +10,9 @@ router.post("/register", async (req: Request, res: Response) => {
     const { email, motDePasse, nom } = req.body;
 
     if (!email || !motDePasse || !nom) {
-      return res.status(400).json({ message: "Email, mot de passe et nom obligatoire" });
+      return res
+        .status(400)
+        .json({ message: "Email, mot de passe et nom obligatoire" });
     }
 
     const utilisateurExiste = await prisma.utilisateur.findUnique({
@@ -49,7 +51,9 @@ router.post("/login", async (req: Request, res: Response) => {
     const { email, motDePasse } = req.body;
 
     if (!email || !motDePasse) {
-      return res.status(400).json({ message: "Email et mot de passe obligatoires" });
+      return res
+        .status(400)
+        .json({ message: "Email et mot de passe obligatoires" });
     }
 
     const utilisateur = await prisma.utilisateur.findUnique({
@@ -60,7 +64,10 @@ router.post("/login", async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Identifiants invalides" });
     }
 
-    const motDePasseValide = await bcrypt.compare(motDePasse, utilisateur.motDePasseHash);
+    const motDePasseValide = await bcrypt.compare(
+      motDePasse,
+      utilisateur.motDePasseHash,
+    );
 
     if (!motDePasseValide) {
       return res.status(401).json({ message: "Identifiants invalides" });
@@ -77,7 +84,7 @@ router.post("/login", async (req: Request, res: Response) => {
         role: utilisateur.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "2h" }
+      { expiresIn: "2h" },
     );
 
     res.json({
