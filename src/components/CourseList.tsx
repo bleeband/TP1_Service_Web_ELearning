@@ -18,9 +18,7 @@ type Props = {
   refresh: number;
 };
 
-export default function CourseList({
-  refresh,
-}: Props) {
+export default function CourseList({ refresh }: Props) {
   const [cours, setCours] = useState<Cours[]>([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
@@ -54,30 +52,24 @@ export default function CourseList({
 
   return (
     <section className="liste-cours">
-      {cours.length === 0 ? (
+      {cours.length === 0 ?
         <p>Aucun cours disponible.</p>
-      ) : (
-        cours.map((cours) => (
-          <article
-            key={cours.id}
-            className="carte-cours"
-          >
+      : cours.map((cours) => (
+          <article key={cours.id} className="carte-cours">
             <h2>{cours.titre}</h2>
 
             <p>{cours.description}</p>
 
             <p>
-              <strong>Niveau :</strong>{" "}
-              {cours.niveau}
+              <strong>Niveau :</strong> {cours.niveau}
             </p>
 
             <p>
-              <strong>Formateur :</strong>{" "}
-              {cours.formateur.nom}
+              <strong>Formateur :</strong> {cours.formateur.nom}
             </p>
           </article>
         ))
-      )}
+      }
     </section>
   );
 }
