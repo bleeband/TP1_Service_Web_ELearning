@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import QuizCourse from "@/components/QuizCourse";
 
 type Inscription = {
   id: number;
@@ -20,8 +21,7 @@ type Inscription = {
 export default function MesCoursPage() {
   const { utilisateur } = useAuth();
 
-  const [inscriptions, setInscriptions] =
-    useState<Inscription[]>([]);
+  const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
 
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
@@ -43,9 +43,7 @@ export default function MesCoursPage() {
 
       setInscriptions(reponse.data);
     } catch {
-      setErreur(
-        "Impossible de charger vos inscriptions",
-      );
+      setErreur("Impossible de charger vos inscriptions");
     } finally {
       setChargement(false);
     }
@@ -56,18 +54,13 @@ export default function MesCoursPage() {
     progression: number,
   ) {
     try {
-      await api.put(
-        `/inscriptions/${inscriptionId}/progression`,
-        {
-          progression,
-        },
-      );
+      await api.put(`/inscriptions/${inscriptionId}/progression`, {
+        progression,
+      });
 
       await chargerInscriptions();
     } catch {
-      setErreur(
-        "Impossible de modifier la progression",
-      );
+      setErreur("Impossible de modifier la progression");
     }
   }
 
@@ -101,90 +94,49 @@ export default function MesCoursPage() {
     <main>
       <h1>Mes cours</h1>
 
-      {erreur && (
-        <p className="erreur">
-          {erreur}
-        </p>
-      )}
+      {erreur && <p className="erreur">{erreur}</p>}
 
-      {inscriptions.length === 0 ? (
-        <p>
-          Vous n'etes inscrit a aucun cours.
-        </p>
-      ) : (
-        <section className="liste-cours">
+      {inscriptions.length === 0 ?
+        <p>Vous n'etes inscrit a aucun cours.</p>
+      : <section className="liste-cours">
           {inscriptions.map((inscription) => (
-            <article
-              key={inscription.id}
-              className="carte-cours"
-            >
-              <h2>
-                {inscription.cours.titre}
-              </h2>
+            <article key={inscription.id} className="carte-cours">
+              <h2>{inscription.cours.titre}</h2>
+
+              <p>{inscription.cours.description}</p>
 
               <p>
-                {inscription.cours.description}
+                <strong>Statut :</strong> {inscription.statut}
               </p>
 
               <p>
-                <strong>Statut :</strong>{" "}
-                {inscription.statut}
-              </p>
-
-              <p>
-                <strong>Progression :</strong>{" "}
-                {inscription.progression} %
+                <strong>Progression :</strong> {inscription.progression} %
               </p>
 
               <div className="progression-boutons">
-                <button
-                  onClick={() =>
-                    modifierProgression(
-                      inscription.id,
-                      25,
-                    )
-                  }
-                >
+                <button onClick={() => modifierProgression(inscription.id, 25)}>
                   25 %
                 </button>
 
-                <button
-                  onClick={() =>
-                    modifierProgression(
-                      inscription.id,
-                      50,
-                    )
-                  }
-                >
+                <button onClick={() => modifierProgression(inscription.id, 50)}>
                   50 %
                 </button>
 
-                <button
-                  onClick={() =>
-                    modifierProgression(
-                      inscription.id,
-                      75,
-                    )
-                  }
-                >
+                <button onClick={() => modifierProgression(inscription.id, 75)}>
                   75 %
                 </button>
 
                 <button
-                  onClick={() =>
-                    modifierProgression(
-                      inscription.id,
-                      100,
-                    )
-                  }
+                  onClick={() => modifierProgression(inscription.id, 100)}
                 >
                   100 %
                 </button>
               </div>
+              <QuizCourse coursId={inscription.cours.id} />
             </article>
           ))}
         </section>
-      )}
+      }
     </main>
   );
 }

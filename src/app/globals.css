@@ -104,3 +104,84 @@
   gap: 10px;
   margin-top: 15px;
 }
+
+.message {
+  padding: 10px;
+  background: white;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+}
+
+.carte-cours button {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 5px;
+}
+
+.progression-boutons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.quiz {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.question {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f7f7f7;
+  border-radius: 5px;
+}
+
+.reponse {
+  display: block;
+  margin: 8px 0;
+}
+
+.reponse input {
+  margin-right: 8px;
+}
+
+.resultat-quiz {
+  margin-top: 15px;
+  padding: 12px;
+  font-weight: bold;
+  background: #f4f4f4;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+}
+
+.quiz {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.question {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f7f7f7;
+  border-radius: 5px;
+}
+
+.reponse {
+  display: block;
+  margin: 8px 0;
+}
+
+.reponse input {
+  margin-right: 8px;
+}
+
+.resultat-quiz {
+  margin-top: 15px;
+  padding: 12px;
+  font-weight: bold;
+  background: #f4f4f4;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+}
