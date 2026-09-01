@@ -28,3 +28,43 @@
   border: 0;
   border-radius: 5px;
 }
+
+.formulaire {
+  max-width: 450px;
+  margin: 50px auto;
+  padding: 25px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.formulaire h1 {
+  margin-top: 0;
+}
+
+.formulaire label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.formulaire input,
+.formulaire textarea,
+.formulaire select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+}
+
+.formulaire button {
+  margin-top: 20px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 5px;
+}
+
+.erreur {
+  padding: 10px;
+  border: 1px solid #bbb;
+}
