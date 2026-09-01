@@ -14,22 +14,37 @@ export default function Navbar() {
       </Link>
 
       <div className="navbar-liens">
-        <Link href="/">Cours</Link>
+        <Link href="/">
+          Cours
+        </Link>
 
-        {utilisateur ?
+        {utilisateur?.role === "ETUDIANT" && (
+          <Link href="/mes-cours">
+            Mes cours
+          </Link>
+        )}
+
+        {utilisateur ? (
           <>
             <span>
               {utilisateur.nom} ({utilisateur.role})
             </span>
 
-            <button onClick={deconnexion}>Deconnexion</button>
+            <button onClick={deconnexion}>
+              Deconnexion
+            </button>
           </>
-        : <>
-            <Link href="/connexion">Connexion</Link>
+        ) : (
+          <>
+            <Link href="/connexion">
+              Connexion
+            </Link>
 
-            <Link href="/inscription">Inscription</Link>
+            <Link href="/inscription">
+              Inscription
+            </Link>
           </>
-        }
+        )}
       </div>
     </nav>
   );

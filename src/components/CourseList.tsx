@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import api from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 type Cours = {
   id: number;
@@ -18,10 +19,15 @@ type Props = {
   refresh: number;
 };
 
-export default function CourseList({ refresh }: Props) {
+export default function CourseList({
+  refresh,
+}: Props) {
+  const { utilisateur } = useAuth();
+
   const [cours, setCours] = useState<Cours[]>([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     chargerCours();
@@ -42,6 +48,22 @@ export default function CourseList({ refresh }: Props) {
     }
   }
 
+  async function inscrire(coursId: number) {
+    try {
+      setMessage("");
+
+      await api.post("/inscriptions", {
+        coursId,
+      });
+
+      setMessage("Inscription reussie");
+    } catch {
+      setMessage(
+        "Impossible de vous inscrire. Vous etes peut-etre deja inscrit.",
+      );
+    }
+  }
+
   if (chargement) {
     return <p>Chargement des cours...</p>;
   }
@@ -52,24 +74,44 @@ export default function CourseList({ refresh }: Props) {
 
   return (
     <section className="liste-cours">
-      {cours.length === 0 ?
+      {message && (
+        <p className="message">
+          {message}
+        </p>
+      )}
+
+      {cours.length === 0 ? (
         <p>Aucun cours disponible.</p>
-      : cours.map((cours) => (
-          <article key={cours.id} className="carte-cours">
+      ) : (
+        cours.map((cours) => (
+          <article
+            key={cours.id}
+            className="carte-cours"
+          >
             <h2>{cours.titre}</h2>
 
             <p>{cours.description}</p>
 
             <p>
-              <strong>Niveau :</strong> {cours.niveau}
+              <strong>Niveau :</strong>{" "}
+              {cours.niveau}
             </p>
 
             <p>
-              <strong>Formateur :</strong> {cours.formateur.nom}
+              <strong>Formateur :</strong>{" "}
+              {cours.formateur.nom}
             </p>
+
+            {utilisateur?.role === "ETUDIANT" && (
+              <button
+                onClick={() => inscrire(cours.id)}
+              >
+                M'inscrire
+              </button>
+            )}
           </article>
         ))
-      }
+      )}
     </section>
   );
 }

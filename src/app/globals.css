@@ -85,3 +85,22 @@
 .carte-cours h2 {
   margin-top: 0;
 }
+
+.message {
+  padding: 10px;
+  background: white;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+}
+
+.carte-cours button {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 5px;
+}
+
+.progression-boutons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
