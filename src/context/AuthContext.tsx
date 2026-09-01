@@ -25,38 +25,24 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const [utilisateur, setUtilisateur] =
-    useState<Utilisateur | null>(null);
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
 
   useEffect(() => {
-    const utilisateurSauvegarde =
-      localStorage.getItem("utilisateur");
+    const utilisateurSauvegarde = localStorage.getItem("utilisateur");
 
     if (utilisateurSauvegarde) {
-      setUtilisateur(
-        JSON.parse(utilisateurSauvegarde),
-      );
+      setUtilisateur(JSON.parse(utilisateurSauvegarde));
     }
   }, []);
 
-  async function connexion(
-    email: string,
-    motDePasse: string,
-  ) {
+  async function connexion(email: string, motDePasse: string) {
     const reponse = await api.post("/auth/login", {
       email,
       motDePasse,
     });
 
-    localStorage.setItem(
-      "token",
-      reponse.data.token,
-    );
+    localStorage.setItem("token", reponse.data.token);
 
     localStorage.setItem(
       "utilisateur",
@@ -90,9 +76,7 @@ export function useAuth() {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error(
-      "useAuth doit etre utilise dans AuthProvider",
-    );
+    throw new Error("useAuth doit etre utilise dans AuthProvider");
   }
 
   return context;
