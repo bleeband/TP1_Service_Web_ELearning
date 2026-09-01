@@ -68,3 +68,20 @@
   padding: 10px;
   border: 1px solid #bbb;
 }
+
+.liste-cours {
+  display: grid;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.carte-cours {
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.carte-cours h2 {
+  margin-top: 0;
+}
