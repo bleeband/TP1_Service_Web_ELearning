@@ -16,10 +16,10 @@ export default function Home() {
   }
 
   return (
-    <main>
-      <h1>Academie en ligne</h1>
+    <main className="p-8 bg-gray-100 min-h-screen">
+      <h1 className="text-4xl font-bold text-gray-900">Academie en ligne</h1>
 
-      <p>Decouvrez les cours disponibles.</p>
+      <p className="text-gray-700 text-lg ">Decouvrez les cours disponibles.</p>
 
       {utilisateur?.role === "FORMATEUR" && (
         <CourseForm onCreated={rafraichirCours} />
