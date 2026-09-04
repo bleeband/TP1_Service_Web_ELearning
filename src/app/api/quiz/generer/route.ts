@@ -59,8 +59,9 @@ export async function POST(request: Request) {
       );
     }
 
+    const triviaUrl = process.env.TRIVIA_API || "https://opentdb.com/api.php";
     const reponseApi = await axios.get(
-      `${process.env.TRIVIA_API}?amount=5&type=multiple`,
+      `${triviaUrl}?amount=5&type=multiple`,
     );
 
     const quiz = await prisma.quiz.create({
