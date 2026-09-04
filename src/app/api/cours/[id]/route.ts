@@ -67,7 +67,7 @@ export async function PUT(
       );
     }
 
-    if (utilisateur.role !== "FORMATEUR") {
+    if (utilisateur.role !== "FORMATEUR" && utilisateur.role !== "ADMIN") {
       return NextResponse.json(
         { erreur: "Acces refuse" },
         { status: 403 },
@@ -90,6 +90,13 @@ export async function PUT(
       return NextResponse.json(
         { erreur: "Cours introuvable" },
         { status: 404 },
+      );
+    }
+
+    if (coursExiste.formateurId !== utilisateur.id && utilisateur.role !== "ADMIN") {
+      return NextResponse.json(
+        { erreur: "Acces refuse : vous ne pouvez modifier que vos propres cours" },
+        { status: 403 },
       );
     }
 
@@ -129,7 +136,7 @@ export async function DELETE(
       );
     }
 
-    if (utilisateur.role !== "FORMATEUR") {
+    if (utilisateur.role !== "FORMATEUR" && utilisateur.role !== "ADMIN") {
       return NextResponse.json(
         { erreur: "Acces refuse" },
         { status: 403 },
@@ -149,6 +156,13 @@ export async function DELETE(
       return NextResponse.json(
         { erreur: "Cours introuvable" },
         { status: 404 },
+      );
+    }
+
+    if (coursExiste.formateurId !== utilisateur.id && utilisateur.role !== "ADMIN") {
+      return NextResponse.json(
+        { erreur: "Acces refuse : vous ne pouvez supprimer que vos propres cours" },
+        { status: 403 },
       );
     }
 

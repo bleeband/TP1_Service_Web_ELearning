@@ -1,73 +1,198 @@
-# TP1 Service Web - E26-420941MA
-- Eva Bessette
-- Charles Legeault
-- Marc-André Dufour
+# Académie en Ligne — Laboratoire 2 (Service Web 25604)
 
-## Le contexte
+Plateforme d'apprentissage en ligne (*mini-Moodle*) développée avec **Next.js Full-Stack (App Router + React + API Routes)**, **Prisma ORM**, **Neon PostgreSQL**, **Axios**, **bcryptjs** et **JWT**.
 
-Un cégep veut lancer sa propre plateforme de cours en ligne, façon « mini-Moodle ». Les formateurs publient des cours composés de leçons ; les étudiants s'y inscrivent, suivent les leçons et passent des quiz dont les questions sont tirées d'une banque mondiale. Votre équipe construit le cerveau de tout ça : le backend.
+## 👥 Équipe
 
-# Partie 1
+- **Eva Bessette**
+- **Charles Legeault**
+- **Marc-André Dufour**
 
-📐 Le diagramme de classes
-Avant une seule ligne de code : modélisez le domaine. Votre diagramme doit faire apparaître les entités, leurs attributs typés, les énumérations et les relations (avec cardinalités).
+---
 
-## 👤 Utilisateur
+## 🚀 Démarrage rapide
 
-email unique, mot de passe (haché), nom, et un rôle : ETUDIANT, FORMATEUR, ADMIN.
+### 1. Cloner et installer les dépendances
 
-## 📚 Cours & Leçon
+```bash
+git clone https://github.com/bleeband/TP1_Service_Web_ELearning.git
+cd TP1_Service_Web_ELearning
+npm install
+```
 
-Un cours (titre, description, niveau : débutant/intermédiaire/avancé) contient plusieurs leçons ordonnées.
+### 2. Configuration des variables d'environnement
 
-## 📝 Inscription & Quiz
+Créez un fichier `.env` à la racine à partir du modèle `.env.example` :
 
-Un étudiant s'inscrit à des cours (statut, progression). Un quiz regroupe des questions et un score.
+```env
+DATABASE_URL="postgresql://utilisateur:motdepasse@ep-xyz.neon.tech/neondb?sslmode=require"
+JWT_SECRET="votre_cle_secrete_jwt"
+PORT=3000
+TRIVIA_API="https://opentdb.com/api.php"
+```
 
-- Relations attendues (au minimum)
-- Un FORMATEUR publie plusieurs cours (1 - N).
-- Un cours contient plusieurs leçons (1 - N).
-- Un étudiant est inscrit à plusieurs cours et un cours a plusieurs étudiants (N - N, via Inscription).
-- Au moins une énumération bien pensée (rôle, niveau, statut d'inscription…).
+### 3. Migration de la base de données
 
-# Partie 2
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
 
-## ⚙️ Le backend
+### 4. Lancer le serveur de développement
 
-Implémentez votre modèle avec Prisma + Neon, exposez-le en API REST avec Express, enrichissez-le via Axios, et protégez-le avec JWT.
+```bash
+npm run dev
+```
 
-## 🗂️ Données & routes (Express + Prisma)
+L'application est accessible sur [http://localhost:3000](http://localhost:3000).
 
-- CRUD des cours : lister, consulter, créer, modifier, supprimer.
-- Inscription d'un étudiant à un cours, et suivi de sa progression.
-- Consulter les leçons d'un cours, dans l'ordre.
-- Organisez le code en routers (cours, auth, inscriptions…).
+---
 
-## 🔐 Sécurité (JWT + rôles)
+## 🛠️ Pile technologique
 
-- Inscription / connexion avec mot de passe haché (bcrypt) et token signé.
-- Consulter les cours : public ou tout utilisateur connecté.
-- Créer / modifier un cours : réservé au rôle FORMATEUR.
-- Gérer les utilisateurs : réservé à ADMIN. Distinguez 401 et 403.
+- **Framework Full-Stack** : Next.js 16 (App Router + API Routes)
+- **Frontend** : React 19, TailwindCSS, Axios (instance avec intercepteur JWT), Context API (`AuthContext`)
+- **Backend & Base de données** : Node.js, Prisma ORM, Neon PostgreSQL
+- **Sécurité** : Hachage des mots de passe avec `bcryptjs`, authentification par token JWT signé, gestion stricte des rôles (401 vs 403)
+- **API Externe** : Open Trivia DB (via Axios) pour la génération de quiz dynamiques
+- **CORS** : Configuré sur toutes les routes `/api/*`
 
+---
 
-## 🌐 L'intégration Axios — banque de questions de quiz
+## 📡 Documentation des routes d'API
 
-Pour générer les questions d'un quiz, interrogez l'Open Trivia Database (gratuite, sans clé) : opentdb.com/api.php. Récupérez 5 questions, transformez la réponse (énoncé + bonnes/mauvaises réponses) et stockez le quiz généré dans votre base.
+### 🔐 Authentification (`/api/auth`)
 
-- Validation
-- Barème & livrables
-- Critère Points
-- Diagramme de classes (entités, énums, relations) 20
-- Prisma + Neon (schéma migré, ≥ 3 entités, relation) 20
-- Express — CRUD complet en routers 20
-- Axios — quiz généré depuis l'API 15
-- JWT — auth + autorisation par rôle 20
-- Démo & qualité du dépôt 5
+| Méthode | Route | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Public | Inscription d'un utilisateur (nom, email, motDePasse) |
+| `POST` | `/api/auth/login` | Public | Connexion (email, motDePasse) -> retourne token JWT et profil |
 
-## 📦 À remettre
+### 📚 Cours (`/api/cours`)
 
-Le diagramme (image / PDF).
-Le dépôt Git sans le .env.
-Un README (lancement + routes).
-La collection de tests (auth + CRUD + quiz).
+| Méthode | Route | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/cours` | Public | Liste paginée avec filtres query : `?page=1&limit=10&niveau=DEBUTANT&recherche=...` |
+| `GET` | `/api/cours/:id` | Public | Détails d'un cours avec formateur et leçons ordonnées |
+| `POST` | `/api/cours` | `FORMATEUR` | Création d'un cours (titre, description, niveau) |
+| `PUT` | `/api/cours/:id` | `FORMATEUR` (auteur) ou `ADMIN` | Modification de son propre cours |
+| `DELETE` | `/api/cours/:id` | `FORMATEUR` (auteur) ou `ADMIN` | Suppression de son propre cours |
+| `GET` | `/api/cours/:id/lecons` | Public | Liste des leçons d'un cours ordonnées |
+| `POST` | `/api/cours/:id/lecons` | `FORMATEUR` | Ajout d'une leçon à un cours |
+
+### 📝 Inscriptions & Progression (`/api/inscriptions`)
+
+| Méthode | Route | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/inscriptions` | `ETUDIANT` | Liste des inscriptions de l'étudiant connecté |
+| `POST` | `/api/inscriptions` | `ETUDIANT` | Inscription à un cours (`coursId`) |
+| `PUT` | `/api/inscriptions/:id/progression` | `ETUDIANT` | Mise à jour de la progression (0 à 100 %) |
+
+### 🧠 Quiz (`/api/quiz`)
+
+| Méthode | Route | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/quiz` | `ETUDIANT` | Liste des quiz passés par l'étudiant |
+| `POST` | `/api/quiz/generer` | `ETUDIANT` | Interroge Open Trivia DB via Axios, génère 5 questions et stocke le quiz |
+| `PUT` | `/api/quiz/:id/score` | `ETUDIANT` (auteur) | Enregistrement du score du quiz |
+
+### 👤 Administration des utilisateurs (`/api/utilisateurs`)
+
+| Méthode | Route | Accès | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/utilisateurs` | `ADMIN` | Liste de tous les utilisateurs (401 si non connecté, 403 si non ADMIN) |
+| `GET` | `/api/utilisateurs/:id` | `ADMIN` | Détail d'un utilisateur |
+| `DELETE` | `/api/utilisateurs/:id` | `ADMIN` | Suppression d'un utilisateur |
+
+---
+
+## 📐 Modélisation du Domaine (Diagramme UML de classes)
+
+```mermaid
+classDiagram
+  direction LR
+
+  class Utilisateur {
+    +Int id
+    +String email
+    +String motDePasseHash
+    +String nom
+    +Role role
+    +DateTime dateCreation
+  }
+
+  class Cours {
+    +Int id
+    +String titre
+    +String description
+    +NiveauCours niveau
+    +DateTime dateCreation
+    +Int formateurId
+  }
+
+  class Lecon {
+    +Int id
+    +String titre
+    +String contenu
+    +Int ordre
+    +Int coursId
+  }
+
+  class Inscription {
+    +Int id
+    +StatutInscription statut
+    +Int progression
+    +DateTime dateInscription
+    +Int etudiantId
+    +Int coursId
+  }
+
+  class Quiz {
+    +Int id
+    +Int score nullable
+    +DateTime dateCreation
+    +Int coursId
+    +Int etudiantId
+  }
+
+  class Question {
+    +Int id
+    +String enonce
+    +String bonneReponse
+    +String[] mauvaisesReponses
+    +Int quizId
+  }
+
+  class Role {
+    <<enumeration>>
+    ETUDIANT
+    FORMATEUR
+    ADMIN
+  }
+
+  class NiveauCours {
+    <<enumeration>>
+    DEBUTANT
+    INTERMEDIAIRE
+    AVANCE
+  }
+
+  class StatutInscription {
+    <<enumeration>>
+    ACTIVE
+    TERMINEE
+    ABANDONNEE
+  }
+
+  Utilisateur "1" --> "0..*" Cours : publie
+  Cours "1" *-- "0..*" Lecon : contient
+  Utilisateur "1" --> "0..*" Inscription : etudiant
+  Cours "1" --> "0..*" Inscription : inscriptions
+  Cours "1" *-- "0..*" Quiz : quiz
+  Utilisateur "1" --> "0..*" Quiz : passe
+  Quiz "1" *-- "0..*" Question : questions
+
+  Utilisateur ..> Role : role
+  Cours ..> NiveauCours : niveau
+  Inscription ..> StatutInscription : statut
+```
