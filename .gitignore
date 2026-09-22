@@ -7,3 +7,5 @@ node_modules/
 .env.production.local
 src/generated/prisma/
 *.tsbuildinfo
+
+_archive/
