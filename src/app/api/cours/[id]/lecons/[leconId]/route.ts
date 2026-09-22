@@ -24,14 +24,14 @@ export async function PUT(
       );
     }
 
-    if (utilisateur.role !== "FORMATEUR") {
+    if (utilisateur.role !== "FORMATEUR" && utilisateur.role !== "ADMIN") {
       return NextResponse.json(
         { erreur: "Acces refuse" },
         { status: 403 },
       );
     }
 
-    const { leconId } = await contexte.params;
+    const { id: coursId, leconId } = await contexte.params;
     const id = Number(leconId);
 
     const body = await request.json();
@@ -39,12 +39,31 @@ export async function PUT(
 
     const leconExiste = await prisma.lecon.findUnique({
       where: { id },
+      include: {
+        cours: {
+          select: {
+            id: true,
+            formateurId: true,
+          },
+        },
+      },
     });
 
     if (!leconExiste) {
       return NextResponse.json(
         { erreur: "Lecon introuvable" },
         { status: 404 },
+      );
+    }
+
+    if (
+      leconExiste.cours.id !== Number(coursId) ||
+      (utilisateur.role !== "ADMIN" &&
+        leconExiste.cours.formateurId !== utilisateur.id)
+    ) {
+      return NextResponse.json(
+        { erreur: "Acces refuse" },
+        { status: 403 },
       );
     }
 
@@ -82,24 +101,43 @@ export async function DELETE(
       );
     }
 
-    if (utilisateur.role !== "FORMATEUR") {
+    if (utilisateur.role !== "FORMATEUR" && utilisateur.role !== "ADMIN") {
       return NextResponse.json(
         { erreur: "Acces refuse" },
         { status: 403 },
       );
     }
 
-    const { leconId } = await contexte.params;
+    const { id: coursId, leconId } = await contexte.params;
     const id = Number(leconId);
 
     const leconExiste = await prisma.lecon.findUnique({
       where: { id },
+      include: {
+        cours: {
+          select: {
+            id: true,
+            formateurId: true,
+          },
+        },
+      },
     });
 
     if (!leconExiste) {
       return NextResponse.json(
         { erreur: "Lecon introuvable" },
         { status: 404 },
+      );
+    }
+
+    if (
+      leconExiste.cours.id !== Number(coursId) ||
+      (utilisateur.role !== "ADMIN" &&
+        leconExiste.cours.formateurId !== utilisateur.id)
+    ) {
+      return NextResponse.json(
+        { erreur: "Acces refuse" },
+        { status: 403 },
       );
     }
 

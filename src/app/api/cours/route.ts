@@ -32,13 +32,14 @@ export async function GET(request: Request) {
       where,
       include: {
         formateur: {
-          omit: {
-            motDePasseHash: true,
+          select: {
+            id: true,
+            nom: true,
           },
         },
-        lecons: {
-          orderBy: {
-            ordre: "asc",
+        _count: {
+          select: {
+            lecons: true,
           },
         },
       },

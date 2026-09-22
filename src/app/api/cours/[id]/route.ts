@@ -14,8 +14,60 @@ export async function GET(
   contexte: ContexteRoute,
 ) {
   try {
+    const utilisateur = obtenirUtilisateur(request);
+
+    if (!utilisateur) {
+      return NextResponse.json(
+        { erreur: "Token manquant ou invalide" },
+        { status: 401 },
+      );
+    }
+
     const { id } = await contexte.params;
     const coursId = Number(id);
+
+    const coursExiste = await prisma.cours.findUnique({
+      where: {
+        id: coursId,
+      },
+      select: {
+        id: true,
+        formateurId: true,
+      },
+    });
+
+    if (!coursExiste) {
+      return NextResponse.json(
+        { erreur: "Cours introuvable" },
+        { status: 404 },
+      );
+    }
+
+    let autorise = utilisateur.role === "ADMIN";
+
+    if (utilisateur.role === "FORMATEUR") {
+      autorise = coursExiste.formateurId === utilisateur.id;
+    }
+
+    if (utilisateur.role === "ETUDIANT") {
+      const inscription = await prisma.inscription.findUnique({
+        where: {
+          etudiantId_coursId: {
+            etudiantId: utilisateur.id,
+            coursId,
+          },
+        },
+      });
+
+      autorise = Boolean(inscription);
+    }
+
+    if (!autorise) {
+      return NextResponse.json(
+        { erreur: "Vous n'avez pas acces a ce cours" },
+        { status: 403 },
+      );
+    }
 
     const cours = await prisma.cours.findUnique({
       where: {
@@ -23,8 +75,9 @@ export async function GET(
       },
       include: {
         formateur: {
-          omit: {
-            motDePasseHash: true,
+          select: {
+            id: true,
+            nom: true,
           },
         },
         lecons: {
@@ -34,13 +87,6 @@ export async function GET(
         },
       },
     });
-
-    if (!cours) {
-      return NextResponse.json(
-        { erreur: "Cours introuvable" },
-        { status: 404 },
-      );
-    }
 
     return NextResponse.json(cours);
   } catch (erreur) {

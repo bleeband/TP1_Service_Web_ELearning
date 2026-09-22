@@ -18,6 +18,9 @@ Sujet : **E-Learning (Mini-Moodle)**
 
 Lien : [https://github.com/bleeband/TP1_Service_Web_ELearning](https://github.com/bleeband/TP1_Service_Web_ELearning)
 
+Lien de la vidéo de démonstration :
+[https://youtu.be/oCIhPmHj6XE](https://youtu.be/oCIhPmHj6XE)
+
 ## ▶️ Lancer le projet
 
 > Note : Avec l'autorisation de l'enseignant, le projet est développé en **Next.js Full-Stack** (App Router avec React côté client et API Routes côté serveur), combinant le frontend et le backend avec support CORS complet.

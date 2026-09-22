@@ -65,8 +65,11 @@ export default function QuizCourse({ coursId }: Props) {
       );
 
       setQuestions(questionsPreparees);
-    } catch {
-      setErreur("Impossible de générer le quiz. Veuillez réessayer.");
+    } catch (err: any) {
+      setErreur(
+        err.response?.data?.erreur ||
+          "Impossible de générer le quiz. Veuillez réessayer.",
+      );
     } finally {
       setChargement(false);
     }
@@ -116,7 +119,7 @@ export default function QuizCourse({ coursId }: Props) {
               🧠 Quiz d'évaluation dynamique
             </h4>
             <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--color-text-muted)" }}>
-              Testez vos connaissances avec 5 questions certifiées générées via l'API Open Trivia DB.
+              Testez vos connaissances avec 5 questions liées au sujet du cours.
             </p>
           </div>
 
