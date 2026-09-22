@@ -26,7 +26,7 @@ export async function PUT(
       );
     }
 
-    if (utilisateur.role !== "FORMATEUR") {
+    if (utilisateur.role !== "FORMATEUR" && utilisateur.role !== "ADMIN") {
       return NextResponse.json(
         { erreur: "Acces refuse" },
         { status: 403 },
@@ -73,7 +73,10 @@ export async function PUT(
       );
     }
 
-    if (inscription.cours.formateurId !== utilisateur.id) {
+    if (
+      utilisateur.role !== "ADMIN" &&
+      inscription.cours.formateurId !== utilisateur.id
+    ) {
       return NextResponse.json(
         { erreur: "Acces refuse" },
         { status: 403 },

@@ -14,19 +14,19 @@ export async function GET(request: Request) {
       );
     }
 
-    if (utilisateur.role !== "FORMATEUR") {
+    if (utilisateur.role !== "FORMATEUR" && utilisateur.role !== "ADMIN") {
       return NextResponse.json(
         { erreur: "Acces refuse" },
         { status: 403 },
       );
     }
 
+    const where = utilisateur.role === "FORMATEUR"
+      ? { cours: { formateurId: utilisateur.id } }
+      : {};
+
     const inscriptions = await prisma.inscription.findMany({
-      where: {
-        cours: {
-          formateurId: utilisateur.id,
-        },
-      },
+      where,
       select: {
         id: true,
         statut: true,
@@ -36,6 +36,13 @@ export async function GET(request: Request) {
           select: {
             id: true,
             titre: true,
+            formateur: {
+              select: {
+                id: true,
+                nom: true,
+                email: true,
+              },
+            },
           },
         },
         etudiant: {

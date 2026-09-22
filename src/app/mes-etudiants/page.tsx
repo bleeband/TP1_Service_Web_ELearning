@@ -17,6 +17,11 @@ type Inscription = {
   cours: {
     id: number;
     titre: string;
+    formateur: {
+      id: number;
+      nom: string;
+      email: string;
+    };
   };
   etudiant: {
     id: number;
@@ -44,7 +49,7 @@ export default function MesEtudiantsPage() {
   const [miseAJourId, setMiseAJourId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (utilisateur?.role === "FORMATEUR") {
+    if (utilisateur?.role === "FORMATEUR" || utilisateur?.role === "ADMIN") {
       chargerInscriptions();
     } else {
       setChargement(false);
@@ -104,7 +109,7 @@ export default function MesEtudiantsPage() {
         <div className="form-card" style={{ maxWidth: "440px" }}>
           <h2>Connexion requise</h2>
           <p style={{ color: "var(--color-text-muted)", marginBottom: "1.5rem" }}>
-            Connectez-vous avec un compte formateur pour gérer vos étudiants.
+            Connectez-vous avec un compte formateur ou administrateur pour gérer les étudiants.
           </p>
           <Link href="/connexion" className="btn-primary" style={{ width: "100%" }}>
             Se connecter
@@ -114,13 +119,13 @@ export default function MesEtudiantsPage() {
     );
   }
 
-  if (utilisateur.role !== "FORMATEUR") {
+  if (utilisateur.role !== "FORMATEUR" && utilisateur.role !== "ADMIN") {
     return (
       <main style={{ textAlign: "center", padding: "5rem 1rem" }}>
         <div className="form-card" style={{ maxWidth: "460px" }}>
-          <h2>Espace réservé aux formateurs</h2>
+          <h2>Espace réservé</h2>
           <p style={{ color: "var(--color-text-muted)", marginBottom: "1.5rem" }}>
-            Seul le formateur d'un cours peut voir et gérer ses étudiants.
+            Seul un formateur ou un administrateur peut voir et gérer les étudiants.
           </p>
           <Link href="/" className="btn-secondary" style={{ width: "100%" }}>
             Retour aux cours
@@ -152,13 +157,15 @@ export default function MesEtudiantsPage() {
             letterSpacing: "0.05em",
           }}
         >
-          Espace formateur
+          {utilisateur.role === "ADMIN" ? "Espace administrateur" : "Espace formateur"}
         </span>
         <h1 style={{ margin: "0.25rem 0 0.5rem", fontSize: "2.2rem", fontWeight: 800 }}>
-          Mes étudiants
+          {utilisateur.role === "ADMIN" ? "Gestion des étudiants" : "Mes étudiants"}
         </h1>
         <p style={{ color: "var(--color-text-muted)" }}>
-          Consultez les inscriptions de vos cours et gérez leur statut.
+          {utilisateur.role === "ADMIN"
+            ? "Consultez toutes les inscriptions et gérez leur statut."
+            : "Consultez les inscriptions de vos cours et gérez leur statut."}
         </p>
       </section>
 
@@ -176,7 +183,14 @@ export default function MesEtudiantsPage() {
           {Object.values(inscriptionsParCours).map((groupe) => (
             <section key={groupe[0].cours.id} className="form-card">
               <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "center", marginBottom: "1rem" }}>
-                <h2 style={{ margin: 0 }}>{groupe[0].cours.titre}</h2>
+                <div>
+                  <h2 style={{ margin: 0 }}>{groupe[0].cours.titre}</h2>
+                  {utilisateur.role === "ADMIN" && (
+                    <div style={{ color: "var(--color-text-muted)", fontSize: "0.875rem", marginTop: "0.35rem" }}>
+                      Formateur : {groupe[0].cours.formateur.nom} ({groupe[0].cours.formateur.email})
+                    </div>
+                  )}
+                </div>
                 <span style={{ color: "var(--color-text-muted)", fontSize: "0.9rem" }}>
                   {groupe.length} étudiant{groupe.length > 1 ? "s" : ""}
                 </span>
