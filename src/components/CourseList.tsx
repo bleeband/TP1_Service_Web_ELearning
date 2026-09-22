@@ -6,12 +6,6 @@ import Link from "next/link";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
-type Lecon = {
-  id: number;
-  titre: string;
-  ordre: number;
-};
-
 type Cours = {
   id: number;
   titre: string;
@@ -21,7 +15,9 @@ type Cours = {
     id: number;
     nom: string;
   };
-  lecons?: Lecon[];
+  _count?: {
+    lecons: number;
+  };
 };
 
 type Props = {
@@ -197,9 +193,9 @@ export default function CourseList({ refresh }: Props) {
                       {getNiveauLabel(c.niveau)}
                     </span>
 
-                    {c.lecons && c.lecons.length > 0 && (
+                    {c._count && c._count.lecons > 0 && (
                       <span style={{ fontSize: "0.775rem", color: "var(--color-text-muted)", background: "rgba(255,255,255,0.04)", padding: "0.2rem 0.55rem", borderRadius: "6px" }}>
-                        {c.lecons.length} {c.lecons.length > 1 ? "leçons" : "leçon"}
+                        {c._count.lecons} {c._count.lecons > 1 ? "leçons" : "leçon"}
                       </span>
                     )}
                   </div>

@@ -14,8 +14,59 @@ export async function GET(
   contexte: ContexteRoute,
 ) {
   try {
+    const utilisateur = obtenirUtilisateur(request);
+
+    if (!utilisateur) {
+      return NextResponse.json(
+        { erreur: "Token manquant ou invalide" },
+        { status: 401 },
+      );
+    }
+
     const { id } = await contexte.params;
     const coursId = Number(id);
+
+    const cours = await prisma.cours.findUnique({
+      where: {
+        id: coursId,
+      },
+      select: {
+        formateurId: true,
+      },
+    });
+
+    if (!cours) {
+      return NextResponse.json(
+        { erreur: "Cours introuvable" },
+        { status: 404 },
+      );
+    }
+
+    let autorise = utilisateur.role === "ADMIN";
+
+    if (utilisateur.role === "FORMATEUR") {
+      autorise = cours.formateurId === utilisateur.id;
+    }
+
+    if (utilisateur.role === "ETUDIANT") {
+      const inscription = await prisma.inscription.findUnique({
+        where: {
+          etudiantId_coursId: {
+            etudiantId: utilisateur.id,
+            coursId,
+          },
+        },
+      });
+
+      autorise = Boolean(inscription);
+    }
+
+    if (!autorise) {
+      return NextResponse.json(
+        { erreur: "Vous n'avez pas acces aux lecons de ce cours" },
+        { status: 403 },
+      );
+    }
 
     const lecons = await prisma.lecon.findMany({
       where: {
@@ -51,7 +102,7 @@ export async function POST(
       );
     }
 
-    if (utilisateur.role !== "FORMATEUR") {
+    if (utilisateur.role !== "FORMATEUR" && utilisateur.role !== "ADMIN") {
       return NextResponse.json(
         { erreur: "Acces refuse" },
         { status: 403 },
@@ -83,6 +134,16 @@ export async function POST(
       return NextResponse.json(
         { erreur: "Cours introuvable" },
         { status: 404 },
+      );
+    }
+
+    if (
+      utilisateur.role !== "ADMIN" &&
+      coursExiste.formateurId !== utilisateur.id
+    ) {
+      return NextResponse.json(
+        { erreur: "Acces refuse : vous ne pouvez gerer que vos propres cours" },
+        { status: 403 },
       );
     }
 
